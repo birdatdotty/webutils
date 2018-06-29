@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@/@PACKAGE@
+includedir=@includedir@/@PACKAGE@
+
+Cflags: -I${includedir}
+Libs: -L${libdir} -ljsoncpp -lhelperJSON
+
+Name: libhelperJSON
+Description: functions for json-cpp
+Version: 0.0.1

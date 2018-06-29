@@ -1,0 +1,17 @@
+[
+   {
+      "groups" : [ "aaaa" ],
+      "login" : "aaaa",
+      "password" : "ppppppp"
+   },
+   {
+      "groups" : [ "aaaaaaaaaaa", "anyGroup", "anyGroup2" ],
+      "login" : "gluck",
+      "password" : "fgtkmcby"
+   },
+   {
+      "groups" : [ "anyGroup", "anyGroup2", "anyGroup4" ],
+      "login" : "user",
+      "password" : "pass"
+   }
+]

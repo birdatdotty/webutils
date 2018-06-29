@@ -1,0 +1,12 @@
+#ifndef _CALLBACK_H_
+#define _CALLBACK_H_
+
+#include <string>
+#include <functional>
+
+class Callback {
+  public:
+    virtual std::string getMessage (std::string,std::function<void(std::string)> retClient)=0;
+};
+
+#endif
