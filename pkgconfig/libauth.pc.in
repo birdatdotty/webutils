@@ -9,3 +9,4 @@ Libs: -L${libdir} -lauth -lboost_filesystem -lboost_system -lboost_locale
 Name: libauth
 Description: functions for auth
 Version: 0.0.1
+Requires: jsoncpp
