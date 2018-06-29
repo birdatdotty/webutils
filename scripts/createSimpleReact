@@ -1,0 +1,96 @@
+#!/usr/bin/python3
+import json
+import os
+import subprocess
+
+subprocess.call(['npm', 'init', '-y'])
+
+file = 'package.json'
+with open(file, 'r') as f:
+    packageJon = json.load(f)
+packageJon["scripts"]["start"] = "webpack-dev-server --mode development --open"
+packageJon["scripts"]["build"] = "webpack --mode production"
+# print (packageJon)
+with open(file, 'w') as outfile:
+    json.dump(packageJon, outfile, indent=2, sort_keys=True)
+
+pkg = ['react', 'react-dom']
+pkgDev = ['babel-core', 'babel-loader', 'babel-preset-env', 'babel-preset-react', 'html-webpack-plugin', 'webpack-dev-server', 'css-loader', 'style-loader', 'babel-preset-react', 'babel-preset-stage-2', 'babel-core', 'babel-loader', 'babel-preset-env', 'webpack-cli', 'webpack']
+
+subprocess.call(['yarn', 'add'] + pkg)
+subprocess.call(['yarn', 'add', '--dev'] + pkgDev)
+
+# install = ['echo', 'yarn', 'add']
+# installDev = ['echo', 'yarn', 'add', '--dev']
+# install = install + pkg
+# print (install)
+with open('webpack.config.js', 'w') as outfile:
+    outfile.write('''const HtmlWebPackPlugin = require("html-webpack-plugin");
+
+const htmlWebpackPlugin = new HtmlWebPackPlugin({
+  template: "./src/index.html",
+  filename: "./index.html"
+});
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      },
+      {
+        test: /\.css$/,
+        use: [
+          { loader: "style-loader" },
+          { loader: "css-loader", options: { modules: true } }
+        ]
+      }
+    ]
+  },
+  plugins: [htmlWebpackPlugin]
+};
+''')
+if not os.path.exists("src"):
+    os.mkdir("src")
+with open('src/index.html', 'w') as outfile:
+    outfile.write('''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Quattrocento+Sans" rel="stylesheet">
+
+  <title>Webpack 4</title>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+</html>
+''')
+with open('src/index.js', 'w') as outfile:
+    outfile.write('''import React from "react";
+import ReactDOM from "react-dom";
+
+const App = () => {
+  return (
+    <p>
+      asdsadasd
+    </p>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById("app"));
+''')
+with open('.babelrc', 'w') as outfile:
+    outfile.write('''{
+  "presets": [
+    "env",
+    "react",
+    "stage-2"
+  ]
+}''')

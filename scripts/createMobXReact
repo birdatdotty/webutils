@@ -1,0 +1,142 @@
+#!/usr/bin/python3
+import json
+import os
+import subprocess
+
+subprocess.call(['npm', 'init', '-y'])
+
+file = 'package.json'
+with open(file, 'r') as f:
+    packageJon = json.load(f)
+packageJon["scripts"]["start"] = "webpack-dev-server --mode development --open"
+packageJon["scripts"]["build"] = "webpack --mode production"
+# print (packageJon)
+with open(file, 'w') as outfile:
+    json.dump(packageJon, outfile, indent=2, sort_keys=True)
+
+pkg = ['react', 'react-dom', 'mobx', 'mobx-react']
+pkgDev = ['babel-core', 'babel-loader', 'babel-preset-env', 'babel-preset-react', 'html-webpack-plugin', 'webpack-dev-server', 'css-loader', 'style-loader', 'babel-preset-react', 'babel-preset-stage-2', 'babel-core', 'babel-loader', 'babel-preset-env', 'webpack-cli', 'webpack', 'babel-plugin-transform-class-properties', 'babel-plugin-transform-decorators-legacy', 'react-hot-loader']
+
+subprocess.call(['yarn', 'add'] + pkg)
+subprocess.call(['yarn', 'add', '--dev'] + pkgDev)
+
+# install = ['echo', 'yarn', 'add']
+# installDev = ['echo', 'yarn', 'add', '--dev']
+# install = install + pkg
+# print (install)
+with open('webpack.config.js', 'w') as outfile:
+    outfile.write('''const HtmlWebPackPlugin = require("html-webpack-plugin");
+
+const htmlWebpackPlugin = new HtmlWebPackPlugin({
+  template: "./src/index.html",
+  filename: "./index.html"
+});
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      },
+      {
+        test: /\.css$/,
+        use: [
+          { loader: "style-loader" },
+          { loader: "css-loader", options: { modules: true } }
+        ]
+      }
+    ]
+  },
+  plugins: [htmlWebpackPlugin]
+};
+''')
+if not os.path.exists("src"):
+    os.mkdir("src")
+with open('src/index.html', 'w') as outfile:
+    outfile.write('''<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="React Mobx Starter">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="root"></div>
+</body>''')
+with open('src/index.js', 'w') as outfile:
+    outfile.write('''import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'mobx-react';
+import { App } from './App';
+import { testStore } from './testStore';
+
+const store = new testStore();
+
+ReactDOM.render(
+  <Provider store={store}><App /></Provider>,
+  document.getElementById('root')
+)''')
+with open('src/App.js', 'w') as outfile:
+    outfile.write('''import React from 'react';
+import MT from './mt';
+
+export class App extends React.Component {
+  render() {
+    return <MT/>
+  }
+}''')
+with open('src/mt.js', 'w') as outfile:
+    outfile.write('''import * as React from 'react';
+import { inject, observer } from 'mobx-react';
+
+@inject('store')
+@observer
+export default class MT extends React.Component {
+  render () {
+    const {store} = this.props;
+    return <div>
+      <h3>asfsdfsdf {store.counter}</h3>
+      <button onClick={()=>store.increment(11)}>saads</button>
+    </div>
+  }
+}''')
+with open('src/testStore.js', 'w') as outfile:
+    outfile.write('''import { observable, action } from 'mobx';
+
+export class testStore {
+
+    @observable
+    counter = 110;
+
+    @action
+    increment = (n) => {
+      console.log(`increment = (${n})`);
+      if(!Number.isInteger(n))
+        n=1
+      this.counter += n;
+    }
+
+    @action
+    decrement = () => {
+        this.counter -= 3;
+    }
+}
+''')
+with open('.babelrc', 'w') as outfile:
+    outfile.write('''{
+  "presets": [
+    "env",
+    "react",
+    "stage-2"
+  ],
+  "plugins": [
+    "react-hot-loader/babel",
+    "transform-decorators-legacy",
+    "transform-class-properties"
+  ]
+}''')
